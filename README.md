@@ -1,6 +1,7 @@
 # PhishLens MVP
 
-Real-time phishing detection Chrome extension with a FastAPI backend and a simple dashboard.
+Real-time phishing detection for the browser with explainable warnings.
+Chrome extension + Flask API + dashboard to review detection events.
 
 ## Quick Start (Windows)
 
