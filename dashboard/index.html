@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PhishLens Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>PhishLens Dashboard</h1>
+      <div class="controls">
+        <label>Max rows: <input type="number" id="limit" value="100" min="1" max="1000" /></label>
+        <label>Filter text: <input type="text" id="filter" placeholder="Search URL or reason..." /></label>
+        <button id="refresh">Refresh</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>URL</th>
+            <th>Risk</th>
+            <th>Reasons</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>

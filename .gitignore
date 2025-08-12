@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Local DB
+backend/phishlens.db
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node/npm (if added later)
+node_modules/
+dist/
+
+# Build/Cache
+*.egg-info/
+.cache/

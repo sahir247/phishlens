@@ -1,0 +1,12 @@
+body{margin:0;padding:16px;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;color:#222}
+.container{max-width:1000px;margin:0 auto}
+h1{margin:0 0 12px 0;font-size:20px}
+.controls{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.controls input{padding:6px 8px;border:1px solid #ccc;border-radius:6px}
+.controls button{padding:6px 10px;border-radius:6px;border:1px solid #777;background:#fff;cursor:pointer}
+table{width:100%;border-collapse:collapse}
+th,td{border-bottom:1px solid #eee;padding:8px 6px;text-align:left}
+.risk{display:inline-block;padding:2px 6px;border-radius:4px;color:#fff;font-weight:600}
+.risk.red{background:#e53935}
+.risk.amber{background:#fb8c00}
+.risk.green{background:#43a047}

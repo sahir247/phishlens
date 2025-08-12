@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "PhishLens",
+  "version": "0.1.0",
+  "description": "Real-time phishing detection with explainable warnings.",
+  "permissions": ["tabs", "scripting", "activeTab", "storage"],
+  "host_permissions": ["<all_urls>", "http://127.0.0.1:8000/*", "http://localhost:8000/*"],
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "PhishLens"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

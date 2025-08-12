@@ -1,0 +1,8 @@
+body{margin:0;padding:12px 14px;min-width:260px;max-width:360px;font:13px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;color:#222}
+#app h1{margin:0 0 8px 0;font-size:16px}
+.badge{display:inline-block;padding:6px 10px;border-radius:6px;color:#fff;background:#999;font-weight:600}
+.reason{margin:4px 0}
+.actions{display:flex;gap:8px;margin-top:10px}
+.actions button{padding:6px 10px;border-radius:6px;border:1px solid #777;background:#fff;color:#333;cursor:pointer}
+.actions button#explain{background:#1e88e5;border:none;color:#fff}
+small#meta{display:block;margin-top:8px;color:#555}
