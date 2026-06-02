@@ -1,12 +1,12 @@
 # PhishLens MVP
 
-Real-time phishing detection for the browser with explainable warnings.
+Real-time phishing detection for the browser with explainable warni
 Chrome extension + Flask API + dashboard to review detection events.
 
 ## Quick Start (Windows)
 
 - __One-click run__: double‑click `run_phishlens.bat`.
-  - Creates `.venv` if missing, installs `requirements.txt`, starts backend at `http://127.0.0.1:8000`, and opens `dashboard/index.html`.
+  - Creates `.venv` if missing, installs `requirements.txt`, starts backend at `http://127.0.0.1:8000`, pens `dashboard/index.html`.
 - __Load the extension__: `chrome://extensions` → Enable Developer mode → Load unpacked → select `extension/`.
 
 ## Project Structure
