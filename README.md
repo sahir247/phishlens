@@ -1,140 +1,122 @@
-# PhishLens MVP
+# PhishLens v0.2.0
 
-Real-time phishing detection for the browser with explainable warni
-Chrome extension + Flask API + dashboard to review detection events.
+**Real-time AI-powered browser phishing detection and threat intelligence platform with explainable warnings, interactive cybersecurity dashboard, and DOM security highlights.**
 
-## Quick Start (Windows) 
+---
 
-- __One-click run__: double‑click `run_phishlens.bat`.
-  - Creates `.venv` if missing, installs `requirements.txt`, starts backend at `http://127.0.0.1:8000`, pens `dashboard/index.html`.
-- __Load the extension__: `chrome://extensions` → Enable Developer mode → Load unpacked → select `extension/`.
+## ⚡ Quick Start (Windows)
 
-## Project Structure
+1. **One-Click Launch**: Double-click `run_phishlens.bat`.
+   - Auto-configures Python virtual environment (`.venv`).
+   - Verifies required packages (`requirements.txt`).
+   - Starts API server at `http://127.0.0.1:8000`.
+   - Automatically opens `dashboard/index.html`.
+2. **Load Chrome Extension**:
+   - Open `chrome://extensions` in Chrome.
+   - Enable **Developer mode** (top-right toggle).
+   - Click **Load unpacked** and select the `extension/` directory.
 
-- `backend/` — Flask server (`/check`, `/events`, `/health`)
-- `extension/` — Chrome extension (Manifest V3)
-- `dashboard/` — Minimal HTML dashboard that lists detections
+---
 
-## Architecture
+## 🏛️ Architecture & Full-Stack System
 
-```text
-                ┌──────────────────────┐
-                │   Chrome Extension   │
-                │  (Manifest V3)       │
-                │                      │
-                │  service_worker.js   │
-                │   • on tab load      │
-                │   • capture HTML     │
-                │   • POST /check      │
-                └─────────┬────────────┘
-                          │ JSON {url, html}
-                          ▼
-                 ┌──────────────────────┐
-                 │     Backend (Flask)  │
-                 │  `backend/app.py`    │
-                 │  Endpoints:          │
-                 │   • /check           │
-                 │   • /events (GET/POST)│
-                 │   • /health          │
-                 │                      │
-                 │ Feature Extraction   │
-                 │  `features.py`       │
-                 │ Heuristic Scoring    │
-                 │  `model.py`          │
-                 │ Explainability Map   │
-                 │  `explain.py`        │
-                 └─────────┬────────────┘
-                           │ writes events
-                           ▼
-                 ┌──────────────────────┐
-                 │   SQLite Storage     │
-                 │  `storage.py`        │
-                 │  table: events       │
-                 └─────────┬────────────┘
-                           │ reads
-                           ▼
-                 ┌──────────────────────┐
-                 │     Dashboard        │
-                 │  `dashboard/*.html`  │
-                 │  fetch GET /events   │
-                 └──────────────────────┘
+```
+                  ┌─────────────────────────────────────┐
+                  │       Chrome Extension (V3)         │
+                  │   • Real-time tab DOM analysis      │
+                  │   • Severe threat blocking overlay  │
+                  │   • Animated SVG circular dial      │
+                  │   • Neon DOM element highlighting   │
+                  └──────────────────┬──────────────────┘
+                                     │ JSON {url, html}
+                                     ▼
+                  ┌─────────────────────────────────────┐
+                  │           Flask API Server          │
+                  │  Endpoints:                         │
+                  │   • POST /check     • POST /simulate│
+                  │   • GET  /stats     • GET  /events  │
+                  │   • DEL  /events    • GET  /health  │
+                  │                                     │
+                  │ Feature Extraction (features.py)    │
+                  │  - Typosquatting / Levenshtein      │
+                  │  - Punycode & IDN Homographs        │
+                  │  - Domain & Path Shannon Entropy    │
+                  │  - Cross-domain & Insecure Forms    │
+                  │  - Brand Logo & Text Mismatches     │
+                  │                                     │
+                  │ Hierarchical Risk Model (model.py)  │
+                  │  - Domain, URL, Brand, DOM Scores   │
+                  │  - Non-Linear Compound Multipliers  │
+                  │                                     │
+                  │ Explainability Engine (explain.py)  │
+                  │  - Severity-tagged Anomaly Reasons  │
+                  │  - Precision DOM CSS Selectors      │
+                  └──────────────────┬──────────────────┘
+                                     │
+                                     ▼
+                  ┌─────────────────────────────────────┐
+                  │       SQLite Event Data Layer       │
+                  │  `phishlens.db` (events table)      │
+                  └──────────────────┬──────────────────┘
+                                     │
+                                     ▼
+                  ┌─────────────────────────────────────┐
+                  │     Cyberpunk Analytics Dashboard   │
+                  │  `dashboard/index.html`             │
+                  │   • Live KPI summary cards          │
+                  │   • SVG Threat Severity Donut       │
+                  │   • Top Impersonated Brands Bar     │
+                  │   • Interactive Live URL Simulator  │
+                  │   • Search, Filters & CSV/JSON Exp  │
+                  │   • Event Inspection Drawer Modal   │
+                  └─────────────────────────────────────┘
 ```
 
-Flow:
-- __Extension__ captures page HTML → calls backend `/check`.
-- __Backend__ extracts URL/HTML features → scores risk → returns `risk_score`, `reasons`, `highlights` and logs event.
-- __Extension__ shows banner/popup; optional highlights on “Explain”.
-- __Dashboard__ lists stored events via `/events`.
+---
 
-## Backend: Setup & Run
+## 🚀 Key Features & Capabilities
 
-Windows PowerShell:
+### 1. Hierarchical Feature Extraction & Scoring Engine
+- **Typosquatting & Edit Distance**: Calculates Levenshtein similarities against popular brands (PayPal, Microsoft, Apple, Google, Amazon, Netflix, Chase, Binance, Steam, Coinbase, etc.).
+- **Homograph & IDN Attacks**: Identifies punycode (`xn--`) character obfuscation.
+- **Obfuscation Detection**: Hex/octal encoded IPs, `@` tokens, multi-subdomain depth, path entropy.
+- **DOM & Form Auditing**: Flags cross-domain form submission destinations, forms submitting over unencrypted HTTP, password inputs on non-HTTPS origins, hidden iframes, and deceptive brand logo usage.
 
+### 2. Modern Cyberpunk Analytics Dashboard
+- **Threat KPI Cards**: Real-time total scans, critical detections, suspicious anomalies, safe sites, and average threat risk.
+- **Dynamic Visualizations**: Native SVG Donut chart for threat distribution and horizontal progress bar charts for top targeted brands.
+- **Live Simulator Test Bench**: Test any URL/HTML payload directly with preset phishing attack templates without needing the browser extension loaded.
+- **Event Intelligence**: Real-time event log stream with live search, severity filters (`Critical`, `Warning`, `Safe`), pagination, JSON/CSV exports, and detailed event inspection modals.
+
+### 3. Chrome Extension Proactive Defense
+- **Dynamic Action Badges**: Color-coded risk percentage badges (Green, Amber, Red).
+- **Interactive Popup**: Circular animated SVG gauge, categorized threat breakdown bars (Domain, URL, Brand, DOM), and instant Element Highlighting.
+- **Moderate Risk Banner (50-79%)**: Non-intrusive floating cyber alert bar at the top of suspicious web pages.
+- **Critical Blocking Interstitial (≥80%)**: Full-screen cyber security overlay preventing credential entry with safety exit and optional bypass.
+
+---
+
+## 🛠️ API Reference
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/health` | `GET` | Service status, version, and server timestamp |
+| `/check` | `POST` | Scans `{ url, html }`, logs event, returns risk score & explainability |
+| `/simulate` | `POST` | Interactive test endpoint returning full feature breakdown |
+| `/stats` | `GET` | Aggregated analytics metrics, tier counts, and top brands |
+| `/events` | `GET` | Paginated event list with filters (`level`, `brand`, `search`) |
+| `/events/<id>` | `GET` / `DELETE` | Retrieve or delete a specific event by ID |
+| `/events` | `DELETE` | Clears all stored detection events |
+
+---
+
+## 🧪 Testing Locally
+
+To start the backend manually:
 ```powershell
-# From project root
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -U pip
-pip install -r backend\requirements.txt
-
-# Run Flask server
 python backend\app.py
 ```
-
-If activation is blocked, you can run commands with the venv python directly:
-
+To run tests and verify detection endpoints:
 ```powershell
-.\.venv\Scripts\python -m pip install -U pip
-.\.venv\Scripts\python -m pip install -r backend\requirements.txt
-.\.venv\Scripts\python backend\app.py
+curl -X POST http://127.0.0.1:8000/check -H "Content-Type: application/json" -d '{"url":"https://paypa1-security.com/login.html","html":"<form action=\"http://attacker.xyz/post\"><input type=\"password\"></form>"}'
 ```
-
-API:
-- `GET /health`
-- `POST /check` → `{ url, html }` → `{ risk_score, reasons, highlights, meta }`
-- `GET /events` → recent detections
-
-## Dashboard
-
-Open `dashboard/index.html` in a browser. It fetches from `http://127.0.0.1:8000/events`.
-
-## Chrome Extension (Manifest V3)
-
-1. Go to `chrome://extensions` → enable Developer mode.
-2. Click "Load unpacked" and select the `extension/` folder.
-3. Open any HTTP(S) website. The extension will analyze on page load.
-4. Click the extension icon to see score and reasons. Use "Explain" to highlight elements.
-
-Ensure backend is running on `http://127.0.0.1:8000`.
-
-## Troubleshooting
-
-- __Dependency build errors__: use the included `requirements.txt` (no Rust toolchain required).
-- __Port already in use__: stop other services using 8000 or change port in `backend/app.py`.
-- __No banner/highlights__: open DevTools → Console and check for extension errors; ensure backend `/health` is OK.
-
-## Contributing
-
-- __Prereqs__
-  - Python 3.10+ on PATH (`py --version`), Chrome for extension testing.
-- __Branching__
-  - Create feature branches: `git checkout -b feat/<short-name>`.
-- __Run locally__
-  - `run_phishlens.bat` or follow Backend + Extension steps above.
-- __Coding standards__
-  - Python: small, testable functions in `backend/`; keep endpoints thin.
-  - JS: avoid inline styles where possible; reuse CSS classes like `.phishlens-highlight`.
-- __Add dependencies__
-  - Add to `requirements.txt` (root) and `backend/requirements.txt` if backend-only.
-- __Testing__
-  - Manual: test with safe sites (GitHub, Wikipedia) and sample phish URLs.
-  - Check `/health`, `/events` in browser.
-- __PR checklist__
-  - Description includes purpose, screenshots if UI changed, and test notes.
-  - No console errors; `POST /check` works on a couple of sites.
-
-## Notes
-
-- Heuristic model only (fast baseline). Swap to ML later via `backend/model.py` and serialized model.
-- Event storage: SQLite at `backend/phishlens.db`.
-- CORS is permissive for local development.

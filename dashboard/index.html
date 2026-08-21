@@ -1,31 +1,401 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PhishLens Dashboard</title>
+    <title>PhishLens — Real-Time Browser Threat Intelligence</title>
+    <meta name="description" content="Real-time explainable phishing detection dashboard and threat intelligence monitor." />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="container">
-      <h1>PhishLens Dashboard</h1>
-      <div class="controls">
-        <label>Max rows: <input type="number" id="limit" value="100" min="1" max="1000" /></label>
-        <label>Filter text: <input type="text" id="filter" placeholder="Search URL or reason..." /></label>
-        <button id="refresh">Refresh</button>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>URL</th>
-            <th>Risk</th>
-            <th>Reasons</th>
-          </tr>
-        </thead>
-        <tbody id="rows"></tbody>
-      </table>
+    <!-- Background Ambient Grid & Glows -->
+    <div class="ambient-glow glow-top-left"></div>
+    <div class="ambient-glow glow-bottom-right"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="app-layout">
+      <!-- Top Navbar Header -->
+      <header class="top-nav">
+        <div class="brand-group">
+          <div class="logo-wrapper">
+            <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <circle cx="12" cy="11" r="3" stroke="currentColor" stroke-width="1.8" />
+              <path d="M12 8v-2M12 16v-2M8 11H6M18 11h-2" stroke="currentColor" stroke-width="1.5" />
+            </svg>
+            <span class="logo-pulse"></span>
+          </div>
+          <div>
+            <div class="brand-title">
+              <span class="brand-phish">Phish</span><span class="brand-lens">Lens</span>
+              <span class="version-tag">v0.2.0</span>
+            </div>
+            <div class="brand-subtitle">Real-Time Threat Intelligence & Explainable Security</div>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" role="tablist">
+          <button class="nav-tab active" data-tab="analytics" id="tab-btn-analytics">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+            Threat Analytics
+          </button>
+          <button class="nav-tab" data-tab="simulator" id="tab-btn-simulator">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Live Simulator
+          </button>
+          <button class="nav-tab" data-tab="events" id="tab-btn-events">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Event Intelligence (<span id="event-count-badge">0</span>)
+          </button>
+        </nav>
+
+        <!-- System Status & Controls -->
+        <div class="nav-controls">
+          <div class="status-indicator" id="system-status">
+            <span class="status-dot"></span>
+            <span class="status-text">Backend Online</span>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btn-global-refresh" title="Refresh all data">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Sync
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Container -->
+      <main class="main-container">
+
+        <!-- TAB 1: THREAT ANALYTICS -->
+        <section id="tab-analytics" class="tab-pane active">
+          <!-- Hero KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card card-total">
+              <div class="kpi-icon-wrap icon-cyan">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              </div>
+              <div class="kpi-info">
+                <div class="kpi-label">Total Scans</div>
+                <div class="kpi-value" id="kpi-total-scans">0</div>
+                <div class="kpi-sub">Continuous Real-time Ingestion</div>
+              </div>
+            </div>
+
+            <div class="kpi-card card-danger">
+              <div class="kpi-icon-wrap icon-red">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div class="kpi-info">
+                <div class="kpi-label">Dangerous Threats (≥80%)</div>
+                <div class="kpi-value value-red" id="kpi-dangerous">0</div>
+                <div class="kpi-sub">High-Risk Phishing Intercepted</div>
+              </div>
+            </div>
+
+            <div class="kpi-card card-warning">
+              <div class="kpi-icon-wrap icon-amber">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div class="kpi-info">
+                <div class="kpi-label">Suspicious Pages (50-79%)</div>
+                <div class="kpi-value value-amber" id="kpi-suspicious">0</div>
+                <div class="kpi-sub">Anomaly & Impersonation Warnings</div>
+              </div>
+            </div>
+
+            <div class="kpi-card card-safe">
+              <div class="kpi-icon-wrap icon-green">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div class="kpi-info">
+                <div class="kpi-label">Verified Safe (<50%)</div>
+                <div class="kpi-value value-green" id="kpi-safe">0</div>
+                <div class="kpi-sub">Clean Domain & DOM Verification</div>
+              </div>
+            </div>
+
+            <div class="kpi-card card-avg">
+              <div class="kpi-icon-wrap icon-purple">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+              </div>
+              <div class="kpi-info">
+                <div class="kpi-label">Mean Threat Score</div>
+                <div class="kpi-value value-purple" id="kpi-avg-risk">0.0%</div>
+                <div class="kpi-sub">Overall Environmental Risk</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 24-Hour Threat Activity Trend Chart -->
+          <div class="glass-card trend-card mt-6">
+            <div class="card-header flex-between">
+              <div>
+                <h3 class="card-title">24-Hour Threat Activity Trend</h3>
+                <p class="card-desc">Hourly breakdown of dangerous / suspicious / safe detections</p>
+              </div>
+              <div class="trend-legend">
+                <span class="trend-leg-item"><span class="trend-dot" style="background:#ff3366;"></span>Dangerous</span>
+                <span class="trend-leg-item"><span class="trend-dot" style="background:#f59e0b;"></span>Suspicious</span>
+                <span class="trend-leg-item"><span class="trend-dot" style="background:#10b981;"></span>Safe</span>
+                <span class="trend-leg-item"><span class="trend-dot" style="background:#0ea5e9;"></span>Total</span>
+              </div>
+            </div>
+            <div class="trend-chart-container" id="trend-chart-wrapper">
+              <div class="empty-state-hint">Loading trend data…</div>
+            </div>
+          </div>
+
+          <!-- Visualizations Grid -->
+          <div class="charts-grid">
+            <!-- Threat Severity Donut Chart Card -->
+            <div class="glass-card chart-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Threat Severity Distribution</h3>
+                  <p class="card-desc">Breakdown of scanned URLs by risk severity tier</p>
+                </div>
+              </div>
+              <div class="donut-chart-container">
+                <div class="donut-svg-wrap" id="donut-chart-wrapper">
+                  <!-- Rendered dynamically via SVG -->
+                  <svg id="donut-svg" viewBox="0 0 200 200" width="180" height="180"></svg>
+                  <div class="donut-center-info">
+                    <span class="donut-center-val" id="donut-center-total">0</span>
+                    <span class="donut-center-lbl">Scans</span>
+                  </div>
+                </div>
+                <div class="donut-legend">
+                  <div class="legend-item">
+                    <span class="legend-dot dot-red"></span>
+                    <span class="legend-name">Dangerous</span>
+                    <span class="legend-pct" id="legend-dangerous-pct">0%</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot dot-amber"></span>
+                    <span class="legend-name">Suspicious</span>
+                    <span class="legend-pct" id="legend-suspicious-pct">0%</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot dot-green"></span>
+                    <span class="legend-name">Safe</span>
+                    <span class="legend-pct" id="legend-safe-pct">0%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Top Impersonated Brands Bar Chart Card -->
+            <div class="glass-card chart-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Top Impersonated Brand Targets</h3>
+                  <p class="card-desc">Most targeted organizations in detected phishing campaigns</p>
+                </div>
+              </div>
+              <div class="brands-chart-container" id="brands-bar-wrapper">
+                <div class="empty-state-hint">No brand impersonation events recorded yet.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Activity Stream Preview -->
+          <div class="glass-card mt-6">
+            <div class="card-header flex-between">
+              <div>
+                <h3 class="card-title">Recent Detections Stream</h3>
+                <p class="card-desc">Live log of the most recently analyzed browser sessions</p>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-view-all-events">
+                View Full Event Feed &rarr;
+              </button>
+            </div>
+            <div class="recent-stream-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Target URL</th>
+                    <th>Impersonated Brand</th>
+                    <th>Risk Score</th>
+                    <th>Primary Triggers</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-stream-tbody">
+                  <tr><td colspan="6" class="text-center py-6">Loading recent scans...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- TAB 2: LIVE SIMULATOR & TEST BENCH -->
+        <section id="tab-simulator" class="tab-pane">
+          <div class="simulator-layout">
+            <!-- Simulator Form -->
+            <div class="glass-card simulator-input-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">PhishLens Detection Simulator</h3>
+                  <p class="card-desc">Test URL and DOM payload heuristics directly without loading in browser</p>
+                </div>
+              </div>
+
+              <!-- Quick Presets -->
+              <div class="preset-group">
+                <span class="preset-label">Load Preset Test Cases:</span>
+                <button class="preset-chip" id="preset-fake-paypal">Fake PayPal Login (Dangerous)</button>
+                <button class="preset-chip" id="preset-typosquat">Microsoft Typosquat (Suspicious)</button>
+                <button class="preset-chip" id="preset-safe-github">Legitimate GitHub (Safe)</button>
+              </div>
+
+              <form id="simulator-form" class="sim-form">
+                <div class="form-group">
+                  <label for="sim-url">Target URL <span class="required">*</span></label>
+                  <input type="text" id="sim-url" class="form-input" placeholder="https://paypa1-security-verify.com/login.html" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="sim-html">DOM HTML Code (Optional)</label>
+                  <textarea id="sim-html" class="form-textarea" rows="7" placeholder="Paste HTML markup with forms, logos, or scripts..."></textarea>
+                </div>
+
+                <div class="form-actions flex-between">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="sim-persist" />
+                    <span>Log this test into Detection Events database</span>
+                  </label>
+                  <button type="submit" class="btn btn-primary" id="btn-run-sim">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Analyze Threat Now
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Simulator Output Results -->
+            <div class="glass-card simulator-result-card" id="sim-result-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Threat Assessment Report</h3>
+                  <p class="card-desc">Hierarchical ML & heuristic evaluation output</p>
+                </div>
+              </div>
+
+              <div id="sim-result-body" class="sim-result-content">
+                <div class="sim-empty-state">
+                  <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#4a5568" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <p>Run a simulation on the left to inspect real-time risk scores, category breakdowns, and explainability maps.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- TAB 3: EVENT INTELLIGENCE FEED -->
+        <section id="tab-events" class="tab-pane">
+          <div class="glass-card">
+            <!-- Controls Bar -->
+            <div class="events-controls-bar">
+              <div class="search-input-wrap">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="events-search" class="events-search-input" placeholder="Filter by URL, brand, or reasons..." />
+              </div>
+
+              <!-- Risk Filter Buttons -->
+              <div class="filter-pills" role="group">
+                <button class="filter-pill active" data-filter="ALL">All Events</button>
+                <button class="filter-pill pill-danger" data-filter="DANGEROUS">Critical (≥80%)</button>
+                <button class="filter-pill pill-warning" data-filter="SUSPICIOUS">Warning (50-79%)</button>
+                <button class="filter-pill pill-safe" data-filter="SAFE">Safe (&lt;50%)</button>
+              </div>
+
+              <!-- Auto-Refresh Interval -->
+              <div class="auto-refresh-group">
+                <label for="auto-refresh-select">Live Sync:</label>
+                <select id="auto-refresh-select" class="form-select">
+                  <option value="3000">Every 3s</option>
+                  <option value="10000">Every 10s</option>
+                  <option value="0">Paused</option>
+                </select>
+              </div>
+
+              <!-- Actions -->
+              <div class="events-actions">
+                <button class="btn btn-secondary btn-sm" id="btn-export-csv" title="Export events as CSV">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Export CSV
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btn-export-json" title="Export events as JSON">
+                  Export JSON
+                </button>
+                <button class="btn btn-danger-outline btn-sm" id="btn-clear-events" title="Clear all detection events">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  Clear All
+                </button>
+              </div>
+            </div>
+
+            <!-- Full Events Table -->
+            <div class="table-responsive">
+              <table class="data-table" id="full-events-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Scanned Time</th>
+                    <th>Target URL</th>
+                    <th>Detected Brand</th>
+                    <th>Risk Tier</th>
+                    <th>Score</th>
+                    <th>Explainability Triggers</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="full-events-tbody">
+                  <tr><td colspan="8" class="text-center py-6">Loading threat events...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="pagination-bar flex-between">
+              <div class="pagination-info" id="pagination-info">Showing 0 of 0 events</div>
+              <div class="pagination-controls">
+                <button class="btn btn-secondary btn-sm" id="btn-prev-page" disabled>&larr; Previous</button>
+                <span class="page-number-display" id="page-num-display">Page 1</span>
+                <button class="btn btn-secondary btn-sm" id="btn-next-page" disabled>Next &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
+
+    <!-- Event Inspection Modal Drawer -->
+    <div class="modal-backdrop" id="event-modal-backdrop">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div>
+            <h3 class="modal-title" id="modal-event-title">Threat Event Inspection</h3>
+            <div class="modal-subtitle" id="modal-event-time">--</div>
+          </div>
+          <button class="btn-close" id="btn-close-modal">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-event-body">
+          <!-- Dynamic Content Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container"></div>
+
     <script src="main.js"></script>
   </body>
 </html>

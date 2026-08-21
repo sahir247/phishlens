@@ -1,22 +1,96 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PhishLens</title>
+    <title>PhishLens Inspector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <div id="app">
-      <h1>PhishLens</h1>
-      <div id="score" class="badge">--</div>
-      <div id="reasons"></div>
-      <div class="actions">
-        <button id="explain">Explain</button>
-        <button id="refresh">Recheck</button>
+    <div class="popup-container">
+      <!-- Header -->
+      <header class="popup-header">
+        <div class="brand">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <circle cx="12" cy="11" r="3" />
+          </svg>
+          <span>Phish<span class="highlight">Lens</span></span>
+        </div>
+        <div id="badge-level" class="badge-pill badge-safe">SAFE</div>
+      </header>
+
+      <!-- Threat Dial Gauge -->
+      <div class="gauge-section">
+        <div class="gauge-wrap">
+          <svg id="gauge-svg" viewBox="0 0 120 120" width="100" height="100">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+            <circle id="gauge-arc" cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="10" stroke-linecap="round" stroke-dasharray="314.15" stroke-dashoffset="314.15" transform="rotate(-90 60 60)" />
+          </svg>
+          <div class="gauge-text">
+            <span id="score-val">0%</span>
+            <small>Threat</small>
+          </div>
+        </div>
+        <div class="gauge-meta">
+          <div class="domain-title" id="domain-text">Analyzing page...</div>
+          <div id="brand-alert-wrap" class="brand-alert-wrap" style="display:none;">
+            <span class="brand-chip" id="brand-target-chip"></span>
+          </div>
+        </div>
       </div>
-      <small id="meta"></small>
+
+      <!-- Threat Category Bars -->
+      <div class="category-bars" id="category-bars">
+        <div class="cat-bar-item">
+          <div class="cat-bar-lbl">Domain: <span id="cat-domain-val">0%</span></div>
+          <div class="cat-track"><div class="cat-fill" id="cat-domain-fill" style="width:0%"></div></div>
+        </div>
+        <div class="cat-bar-item">
+          <div class="cat-bar-lbl">URL Obfuscation: <span id="cat-url-val">0%</span></div>
+          <div class="cat-track"><div class="cat-fill" id="cat-url-fill" style="width:0%"></div></div>
+        </div>
+        <div class="cat-bar-item">
+          <div class="cat-bar-lbl">Brand Spoof: <span id="cat-brand-val">0%</span></div>
+          <div class="cat-track"><div class="cat-fill" id="cat-brand-fill" style="width:0%"></div></div>
+        </div>
+        <div class="cat-bar-item">
+          <div class="cat-bar-lbl">DOM &amp; Form: <span id="cat-dom-val">0%</span></div>
+          <div class="cat-track"><div class="cat-fill" id="cat-dom-fill" style="width:0%"></div></div>
+        </div>
+        <div class="cat-bar-item">
+          <div class="cat-bar-lbl" style="color:#a78bfa;">ML Classifier: <span id="cat-ml-val" style="color:#a78bfa;">0%</span></div>
+          <div class="cat-track"><div class="cat-fill cat-fill-ml" id="cat-ml-fill" style="width:0%;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div></div>
+        </div>
+      </div>
+
+      <!-- Reasons List -->
+      <div class="reasons-box">
+        <div class="reasons-title">Explainability Flags:</div>
+        <div id="reasons-list" class="reasons-list">
+          <div class="reason-item text-muted">Page scan in progress...</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="popup-actions">
+        <button id="btn-explain" class="btn btn-primary btn-sm">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Highlight Elements
+        </button>
+        <button id="btn-recheck" class="btn btn-secondary btn-sm" title="Re-scan current tab">
+          Recheck
+        </button>
+      </div>
+
+      <div class="footer-link">
+        <button id="btn-open-dashboard" class="link-btn">Open Threat Intelligence Dashboard &rarr;</button>
+      </div>
     </div>
+
     <script src="popup.js"></script>
   </body>
 </html>

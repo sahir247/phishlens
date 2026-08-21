@@ -1,65 +1,120 @@
+/**
+ * PhishLens Background Service Worker (Manifest V3) — v0.3.0
+ * Analyses each tab on load/activation, caches result in session storage,
+ * and updates the action badge with the risk score.
+ * Shows "OFF" badge in grey when backend is unreachable.
+ */
+
 const API_BASE = "http://127.0.0.1:8000";
+
+// Track when session data was last updated per tab
+const _scanTimestamps = {};
 
 async function analyzeTab(tabId) {
   try {
-    // Ask content script for HTML
-    const [{ result: html }] = await chrome.scripting.executeScript({
+    const tab = await chrome.tabs.get(tabId);
+    if (!tab || !tab.url || !/^https?:/i.test(tab.url)) {
+      return;
+    }
+
+    // Capture tab DOM HTML
+    const injectionResults = await chrome.scripting.executeScript({
       target: { tabId },
       func: () => document.documentElement.outerHTML,
     });
 
-    const tab = await chrome.tabs.get(tabId);
+    const html = injectionResults?.[0]?.result || "";
     const payload = { url: tab.url, html };
 
+    // Request PhishLens Backend Assessment
     const res = await fetch(`${API_BASE}/check`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    if (!res.ok) throw new Error("Backend /check failed");
+
+    if (!res.ok) throw new Error(`Backend /check responded with status ${res.status}`);
     const data = await res.json();
 
-    // Store result for popup and notify content to highlight
-    await chrome.storage.session.set({ ["phishlens:" + tabId]: data });
+    // Cache in session storage for popup and in-page inspector
+    const cacheEntry = { ...data, _cachedAt: Date.now() };
+    await chrome.storage.session.set({ [`phishlens:${tabId}`]: cacheEntry });
+    _scanTimestamps[tabId] = Date.now();
 
-    chrome.tabs.sendMessage(tabId, { type: "PHISHLENS_RESULT", data });
+    // Notify in-page content script
+    chrome.tabs.sendMessage(tabId, { type: "PHISHLENS_RESULT", data }).catch(() => {});
 
-    // Badge
+    // Update Action Badge
     const pct = Math.round((data.risk_score || 0) * 100);
-    await chrome.action.setBadgeBackgroundColor({ color: pct >= 80 ? "#e53935" : pct >= 50 ? "#fb8c00" : "#43a047" });
-    await chrome.action.setBadgeText({ tabId, text: String(pct) });
-  } catch (e) {
-    // Clear badge on error
-    await chrome.action.setBadgeText({ tabId, text: "" });
-    // console.error(e);
+    const badgeColor = pct >= 80 ? "#ff3366" : (pct >= 50 ? "#f59e0b" : "#10b981");
+
+    await chrome.action.setBadgeBackgroundColor({ tabId, color: badgeColor });
+    await chrome.action.setBadgeText({ tabId, text: `${pct}%` });
+
+    // Store backend-online state
+    await chrome.storage.session.set({ "phishlens:backend_online": true });
+
+  } catch (err) {
+    // Mark backend as offline
+    await chrome.storage.session.set({ "phishlens:backend_online": false }).catch(() => {});
+
+    // Show grey "OFF" badge
+    await chrome.action.setBadgeBackgroundColor({ tabId, color: "#475569" }).catch(() => {});
+    await chrome.action.setBadgeText({ tabId, text: "OFF" }).catch(() => {});
+
+    // Store error for popup to display
+    await chrome.storage.session.set({
+      [`phishlens:${tabId}:error`]: { message: "Backend offline", ts: Date.now() }
+    }).catch(() => {});
   }
 }
 
+// Tab lifecycle event listeners
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete" && /^https?:/i.test(tab.url || "")) {
+  if (changeInfo.status === "complete" && tab.url && /^https?:/i.test(tab.url)) {
     analyzeTab(tabId);
   }
 });
 
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
-  const tab = await chrome.tabs.get(activeInfo.tabId);
-  if (tab && /^https?:/i.test(tab.url || "")) {
+  const tab = await chrome.tabs.get(activeInfo.tabId).catch(() => null);
+  if (tab && tab.url && /^https?:/i.test(tab.url)) {
     analyzeTab(activeInfo.tabId);
   }
 });
 
-// Provide latest data to popup/content
+// Message hub for popup and content scripts
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  // Called from popup.js (passes explicit tabId)
   if (msg && msg.type === "PHISHLENS_GET_DATA") {
-    const senderTabId = sender?.tab?.id;
-    const tabId = msg.tabId || senderTabId;
+    const tabId = msg.tabId || sender?.tab?.id;
     if (!tabId) {
-      sendResponse({ data: null });
-      return; 
+      sendResponse({ data: null, backendOnline: false });
+      return false;
     }
-    chrome.storage.session.get("phishlens:" + tabId).then((obj) => {
-      sendResponse({ data: obj["phishlens:" + tabId] || null });
+    chrome.storage.session.get([
+      `phishlens:${tabId}`,
+      `phishlens:${tabId}:error`,
+      "phishlens:backend_online",
+    ]).then((res) => {
+      sendResponse({
+        data: res[`phishlens:${tabId}`] || null,
+        error: res[`phishlens:${tabId}:error`] || null,
+        backendOnline: res["phishlens:backend_online"] !== false,
+      });
     });
-    return true; // async response
+    return true;
+  }
+
+  // Called from content.js banner "Explain" button — resolves active tab automatically
+  if (msg && msg.type === "PHISHLENS_GET_CURRENT_TAB_DATA") {
+    chrome.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+      const tabId = tabs?.[0]?.id;
+      if (!tabId) { sendResponse({ data: null }); return; }
+      chrome.storage.session.get([`phishlens:${tabId}`]).then((res) => {
+        sendResponse({ data: res[`phishlens:${tabId}`] || null });
+      });
+    });
+    return true;
   }
 });
