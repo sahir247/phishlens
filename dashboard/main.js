@@ -529,6 +529,10 @@ function renderSimResult(res) {
           <div class="sim-cat-lbl" style="color:#a78bfa;">ML Classifier</div>
           <div class="sim-cat-val" style="color:#a78bfa;">${Math.round((cat.ml_risk || 0) * 100)}%</div>
         </div>
+        <div class="sim-cat-card" style="border-color:rgba(16,185,129,0.3);">
+          <div class="sim-cat-lbl" style="color:#34d399;">Trust Score</div>
+          <div class="sim-cat-val" style="color:#34d399;">${Math.round((cat.trust_score || 0) * 100)}%</div>
+        </div>
       </div>
     </div>
 

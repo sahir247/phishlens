@@ -1,18 +1,23 @@
 """
-PhishLens Scikit-learn Classifier
-----------------------------------
-Trains a GradientBoostingClassifier on a realistic synthetic dataset of
-phishing vs. safe URL feature vectors (the same 16 features extracted by
-features.py).  The trained model is serialised to phishlens_clf.pkl via
-joblib so subsequent starts are < 50 ms cold-start.
+PhishLens ML Classifier  —  Inference Module
+---------------------------------------------
+This module handles model loading and inference only.
+Training is done separately via train_model.py which:
+  - Downloads real phishing + benign URL datasets
+  - Extracts features using features.py
+  - Runs a full professional ML pipeline
+  - Saves a calibrated CalibratedClassifierCV to MODEL_PATH
 
-Run directly to (re-)train:
-    python ml_model.py
+This file intentionally contains the synthetic fallback ONLY as a last resort
+when no real model exists.  The correct path is to run train_model.py first.
 
-Or import get_ml_proba() for inference from model.py.
+Usage:
+    python train_model.py        # train on real data (recommended)
+    python ml_model.py           # fallback: train on synthetic data
 """
 
 import os
+import json
 import logging
 import numpy as np
 
@@ -188,16 +193,46 @@ def train_and_save(model_path: str = MODEL_PATH) -> None:
 # ── Inference ─────────────────────────────────────────────────────────────────
 
 _clf = None
+_clf_meta: dict = {}
 
 
 def _load_model() -> object:
-    global _clf
-    if _clf is None:
-        if not os.path.exists(MODEL_PATH):
-            logger.warning("PhishLens ML: model not found — training now (one-time, ~5 s)…")
-            train_and_save(MODEL_PATH)
-        _clf = joblib.load(MODEL_PATH)
-        logger.info("PhishLens ML: classifier loaded from disk.")
+    global _clf, _clf_meta
+    if _clf is not None:
+        return _clf
+
+    if not os.path.exists(MODEL_PATH):
+        logger.warning(
+            "No trained model found at %s.  "
+            "Run 'python backend/train_model.py' to train on real data.  "
+            "Falling back to synthetic training (accuracy will be lower).",
+            MODEL_PATH,
+        )
+        train_and_save(MODEL_PATH)
+
+    _clf = joblib.load(MODEL_PATH)
+
+    # Load metadata if available (produced by train_model.py)
+    meta_path = os.path.join(os.path.dirname(MODEL_PATH), "data", "model_metadata.json")
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path, "r", encoding="utf-8") as f:
+                _clf_meta = json.load(f)
+            m = _clf_meta.get("metrics", {})
+            logger.info(
+                "ML model loaded  |  type=%s  trained=%s  AUC=%.4f  F1=%.4f  FPR=%.4f",
+                _clf_meta.get("model_type", "unknown"),
+                _clf_meta.get("trained_at", "?")[:10],
+                m.get("auc_roc", 0),
+                m.get("f1_score", 0),
+                m.get("false_positive_rate", 0),
+            )
+        except Exception as e:
+            logger.debug("Could not load model metadata: %s", e)
+            logger.info("ML model loaded from %s.", MODEL_PATH)
+    else:
+        logger.info("ML classifier loaded (no metadata file found).")
+
     return _clf
 
 

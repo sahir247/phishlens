@@ -12,6 +12,8 @@ Production-grade Flask backend featuring:
 """
 
 import os
+# Suppress joblib "could not find physical cores" warning on Windows
+os.environ.setdefault("LOKY_MAX_CPU_COUNT", str(os.cpu_count() or 4))
 import json
 import logging
 import logging.handlers
@@ -75,12 +77,19 @@ DASHBOARD_DIR = os.path.abspath(
 )
 
 logger.info("PhishLens v0.3.0 starting — loading ML model…")
-# Trigger lazy model load / training at startup to avoid first-request delay
 try:
     from ml_model import _load_model
     _load_model()
 except Exception as e:
     logger.warning(f"ML model warm-up failed (will retry on first request): {e}")
+
+# Start Tranco download in background (non-blocking)
+try:
+    from trust import warm_up as _trust_warm_up
+    _trust_warm_up()
+    logger.info("Trust engine: Tranco download started in background.")
+except Exception as e:
+    logger.warning(f"Trust engine warm-up failed: {e}")
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -121,6 +130,7 @@ def _analyse(url_str: str, html_str: str) -> dict:
         "reasons":            reasons_text,
         "structured_reasons": structured_reasons,
         "highlights":         highlights,
+        "trust_signals":      url_features.get("trust_signals", {}),
         "meta":               meta,
     }
 

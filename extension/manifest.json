@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PhishLens — Real-Time Phishing Protection",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "AI-powered real-time phishing detection with explainable in-page warnings and DOM security highlights.",
   "permissions": ["tabs", "scripting", "activeTab", "storage"],
   "host_permissions": [

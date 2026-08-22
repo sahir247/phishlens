@@ -52,3 +52,10 @@ LOG_FILE: str = _get(
 )
 LOG_MAX_BYTES: int = int(_get("PHISHLENS_LOG_MAX_BYTES", str(5 * 1024 * 1024)))  # 5 MB
 LOG_BACKUP_COUNT: int = int(_get("PHISHLENS_LOG_BACKUP", "3"))
+
+# ── Trust Engine data cache dir ───────────────────────────────────────────────
+DATA_DIR: str = _get(
+    "PHISHLENS_DATA_DIR",
+    os.path.join(os.path.dirname(__file__), "data"),
+)
+os.makedirs(DATA_DIR, exist_ok=True)

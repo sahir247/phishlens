@@ -1,0 +1,83 @@
+{
+  "version": "2.0.0",
+  "trained_at": "2026-08-22T07:42:40.732572Z",
+  "training_duration_s": 227.9,
+  "dataset": "Vrbancic et al. 2020 (88k real URLs)",
+  "dataset_url": "https://raw.githubusercontent.com/GregaVrbancic/Phishing-Dataset/master/dataset_full.csv",
+  "model_type": "HistGradientBoosting",
+  "model_path": "C:\\Users\\parve\\OneDrive\\Desktop\\github\\phishlens\\backend\\phishlens_clf.pkl",
+  "feature_cols": [
+    "has_ip",
+    "has_punycode",
+    "is_suspicious_tld",
+    "subdomain_count",
+    "domain_len",
+    "url_len",
+    "num_dashes",
+    "num_at",
+    "entropy_path",
+    "has_https",
+    "suspicious_kw",
+    "kw_hit_count",
+    "brand_in_url",
+    "brand_in_subdomain",
+    "typosquat_score",
+    "num_pw_inputs",
+    "form_action_diff_domain",
+    "form_insecure_http",
+    "logo_mismatch",
+    "hidden_iframes"
+  ],
+  "n_features": 20,
+  "n_train": 56000,
+  "n_val": 12000,
+  "n_test": 12000,
+  "calibration": "Platt (sigmoid, prefit on val set)",
+  "hp_tuning": "RandomizedSearchCV n_iter=50, cv=5-fold",
+  "metrics": {
+    "auc_roc": 0.9793,
+    "avg_precision": 0.988,
+    "accuracy": 0.9323,
+    "precision": 0.9451,
+    "recall": 0.9518,
+    "f1_score": 0.9485,
+    "false_positive_rate": 0.1046,
+    "confusion_matrix": [
+      [
+        3716,
+        434
+      ],
+      [
+        378,
+        7472
+      ]
+    ],
+    "n_test": 12000,
+    "n_tp": 7472,
+    "n_tn": 3716,
+    "n_fp": 434,
+    "n_fn": 378
+  },
+  "feature_importances": {
+    "entropy_path": 0.23239,
+    "url_len": 0.02876,
+    "subdomain_count": 0.02023,
+    "typosquat_score": 0.01137,
+    "domain_len": 0.00729,
+    "num_dashes": 0.00626,
+    "has_https": 0.00409,
+    "num_at": 0.00178,
+    "suspicious_kw": 0.00076,
+    "has_ip": 0.0002,
+    "brand_in_url": 1e-05,
+    "has_punycode": 1e-05,
+    "is_suspicious_tld": 0.0,
+    "kw_hit_count": 0.0,
+    "brand_in_subdomain": 0.0,
+    "num_pw_inputs": 0.0,
+    "form_action_diff_domain": 0.0,
+    "form_insecure_http": 0.0,
+    "logo_mismatch": 0.0,
+    "hidden_iframes": 0.0
+  }
+}

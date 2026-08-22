@@ -5,11 +5,14 @@ from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 from typing import Dict, List, Tuple, Optional, Any
 
+# NOTE: common words like 'login', 'account', 'signin', 'password' are
+# intentionally EXCLUDED — they appear in almost every legitimate bank,
+# email, and SaaS URL, causing constant false positives.
 SUSPICIOUS_KEYWORDS = [
-    "login", "verify", "secure", "update", "account", "confirm",
-    "password", "reset", "bank", "invoice", "pay", "wallet",
-    "signin", "authenticate", "billing", "recover", "unlock",
-    "security", "support", "kyc", "credential", "auth"
+    "verify", "secure", "update", "confirm",
+    "reset", "bank", "invoice", "pay", "wallet",
+    "authenticate", "billing", "recover", "unlock",
+    "support", "kyc", "credential", "ebayisapi", "webscr"
 ]
 
 BRANDS = [
@@ -97,7 +100,7 @@ def detect_brand_typosquatting(domain_name: str) -> Tuple[float, Optional[str]]:
     return best_score, detected_brand
 
 
-def extract_url_features(url: str) -> Dict[str, Any]:
+def extract_url_features(url: str, compute_trust: bool = True) -> Dict[str, Any]:
     parsed = urlparse(url)
     ext = tldextract.extract(url)
     registered_domain = f"{ext.domain}.{ext.suffix}" if ext.suffix else ext.domain
@@ -150,6 +153,20 @@ def extract_url_features(url: str) -> Dict[str, Any]:
     num_percent = url.count("%")
     has_port = 1.0 if (parsed.port and parsed.port not in (80, 443)) else 0.0
 
+    # ── Dynamic Trust Signal ──────────────────────────────────────────────────
+    _has_https = (parsed.scheme == "https")
+    trust_score  = 0.0
+    domain_age_days: Optional[float] = None
+    trust_signals: dict = {}
+
+    if compute_trust and registered_domain:
+        try:
+            from trust import compute_trust as _ct
+            trust_score, trust_signals = _ct(registered_domain, _has_https)
+            domain_age_days = trust_signals.get("domain_age_days")
+        except Exception:
+            pass
+
     features: Dict[str, Any] = {
         # Domain Risk
         "has_ip": is_ip or has_hex_ip,
@@ -157,7 +174,7 @@ def extract_url_features(url: str) -> Dict[str, Any]:
         "is_suspicious_tld": is_suspicious_tld,
         "subdomain_count": float(len(subdomains_list)),
         "domain_len": len(registered_domain or ""),
-        
+
         # URL Risk
         "url_len": len(url),
         "path_len": len(parsed.path or ""),
@@ -169,7 +186,7 @@ def extract_url_features(url: str) -> Dict[str, Any]:
         "num_underscores": float(num_underscores),
         "has_port": has_port,
         "entropy_path": shannon_entropy(path_q),
-        "has_https": 1.0 if parsed.scheme == "https" else 0.0,
+        "has_https": 1.0 if _has_https else 0.0,
         "suspicious_kw": suspicious_kw,
         "kw_hit_count": float(len(kw_hits)),
 
@@ -179,11 +196,16 @@ def extract_url_features(url: str) -> Dict[str, Any]:
         "typosquat_score": typosquat_score,
         "detected_brand": spoofed_brand or "",
 
+        # Dynamic Trust Signals
+        "trust_score":      trust_score,
+        "domain_age_days":  float(domain_age_days) if domain_age_days is not None else -1.0,
+        "trust_signals":    trust_signals,
+
         # Metadata
-        "domain": domain,
+        "domain":            domain,
         "registered_domain": registered_domain,
-        "tld": tld,
-        "hostname": hostname,
+        "tld":               tld,
+        "hostname":          hostname,
     }
     return features
 

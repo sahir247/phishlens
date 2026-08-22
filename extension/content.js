@@ -271,7 +271,7 @@ function ensureBlockingOverlay() {
 function updateInPageAlerts(score, reasons, brandTarget) {
   const pct = Math.round((score || 0) * 100);
 
-  if (pct >= 80) {
+  if (pct >= 85) {
     // Critical Threat Overlay
     const overlay = ensureBlockingOverlay();
     const reasonsBox = document.getElementById("phishlens-overlay-reasons");
@@ -279,7 +279,7 @@ function updateInPageAlerts(score, reasons, brandTarget) {
     const brandNotice = brandTarget ? `<div style="color:#ff3366;font-weight:700;margin-bottom:6px;">Target Impersonation: ${brandTarget.toUpperCase()}</div>` : "";
     reasonsBox.innerHTML = brandNotice + reasonsList;
     overlay.classList.add("visible");
-  } else if (pct >= 50) {
+  } else if (pct >= 60) {
     // Moderate Risk Banner
     const banner = ensureBanner();
     document.getElementById("phishlens-banner-tag").textContent = `RISK ${pct}%`;
