@@ -103,7 +103,10 @@ def _analyse(url_str: str, html_str: str) -> dict:
     )
     all_features = {**url_features, **html_features}
 
-    risk_score, risk_level, category_scores = predict_risk(all_features)
+    risk_score, risk_level, category_scores = predict_risk(
+        all_features, raw_url=url_str, raw_html=html_str
+    )
+
     reasons_text, structured_reasons, explain_selectors = reasons_for(all_features, url_str)
     highlights = list(dict.fromkeys(html_selectors + explain_selectors))
 
@@ -336,7 +339,10 @@ def simulate():
     )
     all_features = {**url_features, **html_features}
 
-    risk_score, risk_level, category_scores = predict_risk(all_features)
+    risk_score, risk_level, category_scores = predict_risk(
+        all_features, raw_url=url_str, raw_html=html_str
+    )
+
     reasons_text, structured_reasons, explain_selectors = reasons_for(all_features, url_str)
     highlights   = list(dict.fromkeys(html_selectors + explain_selectors))
     brand_target = url_features.get("detected_brand") or html_features.get("detected_brand_dom") or ""

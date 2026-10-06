@@ -1,0 +1,80 @@
+{
+  "metrics_14": {
+    "auc_roc": 0.9933,
+    "avg_precision": 0.9965,
+    "accuracy": 0.9637,
+    "precision": 0.9749,
+    "recall": 0.9694,
+    "f1_score": 0.9722,
+    "fpr": 0.0472,
+    "fnr": 0.0306,
+    "n_test": 13298,
+    "inference_ms_per_url": 0.375,
+    "confusion_matrix": [
+      [
+        4380,
+        217
+      ],
+      [
+        266,
+        8435
+      ]
+    ]
+  },
+  "metrics_20": {
+    "auc_roc": 0.9793,
+    "avg_precision": 0.988,
+    "accuracy": 0.9323,
+    "precision": 0.9451,
+    "recall": 0.9518,
+    "f1_score": 0.9485,
+    "false_positive_rate": 0.1046,
+    "confusion_matrix": [
+      [
+        3716,
+        434
+      ],
+      [
+        378,
+        7472
+      ]
+    ],
+    "n_test": 12000,
+    "n_tp": 7472,
+    "n_tn": 3716,
+    "n_fp": 434,
+    "n_fn": 378
+  },
+  "comparison": {
+    "auc_roc": {
+      "14_feat": 0.9933,
+      "20_feat": 0.9793
+    },
+    "accuracy": {
+      "14_feat": 0.9637,
+      "20_feat": 0.9323
+    },
+    "precision": {
+      "14_feat": 0.9749,
+      "20_feat": 0.9451
+    },
+    "recall": {
+      "14_feat": 0.9694,
+      "20_feat": 0.9518
+    },
+    "f1_score": {
+      "14_feat": 0.9722,
+      "20_feat": 0.9485
+    },
+    "fpr": {
+      "14_feat": 0.0472,
+      "20_feat": 0.1046
+    },
+    "fnr": {
+      "14_feat": 0.0306,
+      "20_feat": "?"
+    }
+  },
+  "model_size_14_kb": 97938,
+  "model_size_20_kb": 1195
+}

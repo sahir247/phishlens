@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-08-22T13:12:10Z",
+  "dataset_name": "Independent Live Threat Benchmark (OpenPhish + Tranco)",
+  "total_samples": 4000,
+  "auc_url_only": 0.9547,
+  "auc_full_ensemble": 0.9681,
+  "threshold_performance": [
+    {
+      "threshold": 0.2,
+      "accuracy": 50.28,
+      "precision": 50.14,
+      "recall": 99.75,
+      "f1_score": 0.6673,
+      "fpr": 99.2,
+      "fnr": 0.25
+    },
+    {
+      "threshold": 0.35,
+      "accuracy": 69.62,
+      "precision": 62.69,
+      "recall": 96.95,
+      "f1_score": 0.7614,
+      "fpr": 57.7,
+      "fnr": 3.05
+    },
+    {
+      "threshold": 0.5,
+      "accuracy": 92.15,
+      "precision": 100.0,
+      "recall": 84.3,
+      "f1_score": 0.9148,
+      "fpr": 0.0,
+      "fnr": 15.7
+    },
+    {
+      "threshold": 0.65,
+      "accuracy": 50.35,
+      "precision": 100.0,
+      "recall": 0.7,
+      "f1_score": 0.0139,
+      "fpr": 0.0,
+      "fnr": 99.3
+    }
+  ]
+}

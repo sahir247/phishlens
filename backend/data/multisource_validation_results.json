@@ -1,0 +1,186 @@
+{
+  "scheme1_grouped_validation": {
+    "overall_metrics": {
+      "auc_roc": 0.9334,
+      "pr_auc": 0.9589,
+      "accuracy": 0.873,
+      "precision": 0.9105,
+      "recall_tpr": 0.8566,
+      "f1_score": 0.8827,
+      "fpr": 0.1064,
+      "fnr": 0.1434,
+      "tn": 22004,
+      "fp": 2619,
+      "fn": 4460,
+      "tp": 26646,
+      "n_samples": 55729
+    },
+    "source_breakdown": {
+      "vrbancic": {
+        "auc_roc": 0.9911,
+        "pr_auc": 0.9955,
+        "accuracy": 0.954,
+        "precision": 0.9573,
+        "recall_tpr": 0.9736,
+        "f1_score": 0.9653,
+        "fpr": 0.0837,
+        "fnr": 0.0264,
+        "tn": 3942,
+        "fp": 360,
+        "fn": 219,
+        "tp": 8065,
+        "n_samples": 12586
+      },
+      "phiusiil": {
+        "auc_roc": 0.8241,
+        "pr_auc": 0.8269,
+        "accuracy": 0.8036,
+        "precision": 0.7894,
+        "recall_tpr": 0.6527,
+        "f1_score": 0.7146,
+        "fpr": 0.1052,
+        "fnr": 0.3473,
+        "tn": 18056,
+        "fp": 2123,
+        "fn": 4234,
+        "tp": 7958,
+        "n_samples": 32371
+      },
+      "legitphish": {
+        "auc_roc": 0.9688,
+        "pr_auc": 0.9996,
+        "accuracy": 0.9867,
+        "precision": 0.9874,
+        "recall_tpr": 0.9993,
+        "f1_score": 0.9933,
+        "fpr": 0.9577,
+        "fnr": 0.0007,
+        "tn": 6,
+        "fp": 136,
+        "fn": 7,
+        "tp": 10623,
+        "n_samples": 10772
+      }
+    },
+    "feature_importances": {
+      "file_length": 0.17528515203986683,
+      "domain_length": 0.04482853624082613,
+      "qty_vowels_domain": 0.043576360605567833,
+      "directory_length": 0.03597698806913293,
+      "qty_dot_domain": 0.0335377179676026,
+      "qty_slash_directory": 0.027912657590017525,
+      "params_length": 0.02743455494110188,
+      "time_domain_activation": 0.011170136652815929,
+      "qty_dot_file": 0.006238485151820239,
+      "ttl_hostname": 0.00460442258342586,
+      "time_domain_expiration": 0.003039929668059808,
+      "asn_ip": 0.002888334367262213,
+      "time_response": 0.002485737999174842,
+      "qty_dot_directory": 0.0007333380406818005
+    },
+    "train_samples": 263772,
+    "val_samples": 67249,
+    "test_samples": 55729
+  },
+  "scheme2_lodo_validation": {
+    "train_on_phiusiil_legitphish_test_on_vrbancic": {
+      "test_source": "vrbancic",
+      "train_sources": [
+        "phiusiil",
+        "legitphish"
+      ],
+      "metrics": {
+        "auc_roc": 0.0942,
+        "pr_auc": 0.4567,
+        "accuracy": 0.2147,
+        "precision": 0.3812,
+        "recall_tpr": 0.3213,
+        "f1_score": 0.3487,
+        "fpr": 0.9872,
+        "fnr": 0.6787,
+        "tn": 392,
+        "fp": 30255,
+        "fn": 39363,
+        "tp": 18637,
+        "n_samples": 88647
+      }
+    },
+    "train_on_vrbancic_legitphish_test_on_phiusiil": {
+      "test_source": "phiusiil",
+      "train_sources": [
+        "vrbancic",
+        "legitphish"
+      ],
+      "metrics": {
+        "auc_roc": 0.6606,
+        "pr_auc": 0.6359,
+        "accuracy": 0.421,
+        "precision": 0.4205,
+        "recall_tpr": 0.9653,
+        "f1_score": 0.5858,
+        "fpr": 0.98,
+        "fnr": 0.0347,
+        "tn": 2695,
+        "fp": 132154,
+        "fn": 3452,
+        "tp": 95904,
+        "n_samples": 234205
+      }
+    },
+    "train_on_vrbancic_phiusiil_test_on_legitphish": {
+      "test_source": "legitphish",
+      "train_sources": [
+        "vrbancic",
+        "phiusiil"
+      ],
+      "metrics": {
+        "auc_roc": 0.5213,
+        "pr_auc": 0.9941,
+        "accuracy": 0.9903,
+        "precision": 0.9936,
+        "recall_tpr": 0.9967,
+        "f1_score": 0.9951,
+        "fpr": 0.9491,
+        "fnr": 0.0033,
+        "tn": 22,
+        "fp": 410,
+        "fn": 208,
+        "tp": 63258,
+        "n_samples": 63898
+      }
+    },
+    "train_on_all3_test_on_webpage": {
+      "test_source": "web_page_phishing",
+      "train_sources": [
+        "vrbancic",
+        "phiusiil",
+        "legitphish"
+      ],
+      "metrics": {
+        "auc_roc": 0.6814,
+        "pr_auc": 0.6536,
+        "accuracy": 0.6148,
+        "precision": 0.5743,
+        "recall_tpr": 0.8875,
+        "f1_score": 0.6973,
+        "fpr": 0.6579,
+        "fnr": 0.1125,
+        "tn": 1955,
+        "fp": 3760,
+        "fn": 643,
+        "tp": 5072,
+        "n_samples": 11430
+      }
+    }
+  },
+  "dataset_summary": {
+    "total_samples": 386750,
+    "unique_domains": 220049,
+    "sources": {
+      "phiusiil": 234205,
+      "vrbancic": 88647,
+      "legitphish": 63898
+    }
+  },
+  "execution_time_s": 81.7
+}

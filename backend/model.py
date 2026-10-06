@@ -104,37 +104,65 @@ def calculate_dom_risk(feat: Dict[str, Any]) -> float:
     return min(score, 1.0)
 
 
-def predict_risk(feat: Dict[str, Any]) -> Tuple[float, str, Dict[str, float]]:
+def predict_risk(
+    feat: Dict[str, Any],
+    raw_url: str = "",
+    raw_html: str = "",
+) -> Tuple[float, str, Dict[str, float]]:
     """
-    Hybrid ensemble: 4 heuristic scores + ML probability + dynamic trust dampening.
+    Stage 5 Tri-Component Multi-Modal Production Ensemble:
+      1. Component 1: Multi-Source URL HistGBT (trained on 388k URLs)
+      2. Component 2: DOM Content HistGBT (trained on 235k DOM profiles)
+      3. Component 3: Dynamic Trust Layer (Tranco top-10k + RDAP age)
+      4. Heuristic Rule Category Signals (Domain, URL, Brand, DOM)
+    
     Returns (risk_score 0–1, risk_level str, category_scores dict).
     """
-    # ── Heuristic category scores ─────────────────────────────────────────────
+    # ── 1. Heuristic category scores for explainability ──────────────────────
     domain_score = calculate_domain_risk(feat)
     url_score    = calculate_url_risk(feat)
     brand_score  = calculate_brand_risk(feat)
     dom_score    = calculate_dom_risk(feat)
 
-    # ── ML probability ────────────────────────────────────────────────────────
+    # ── 2. Component 1: Multi-Source URL ML Classifier ───────────────────────
     try:
-        from ml_model import get_ml_proba
-        ml_score = get_ml_proba(feat)
+        from ml_model import get_url_ml_proba
+        url_ml_prob = get_url_ml_proba(feat, raw_url=raw_url)
     except Exception:
-        ml_score = 0.0
+        url_ml_prob = float(feat.get("url_risk", 0.0))
 
-    # ── Weighted linear combination ───────────────────────────────────────────
-    # ML weight raised from 0.20 → 0.30 now that model is trained on real data
-    raw_score = (
-        domain_score * 0.20 +
-        url_score    * 0.10 +
-        brand_score  * 0.25 +
-        dom_score    * 0.15 +
-        ml_score     * 0.30
-    )
+    # ── 3. Component 2: DOM Content ML Classifier ────────────────────────────
+    try:
+        from ml_model import get_dom_ml_proba
+        dom_ml_prob = get_dom_ml_proba(feat, raw_html=raw_html, raw_url=raw_url)
+    except Exception:
+        dom_ml_prob = None
 
-    # ── Non-linear boosters ───────────────────────────────────────────────────
+    # ── 4. Component 3: Dynamic Trust Layer ──────────────────────────────────
+    trust_score = float(feat.get("trust_score", 0.0))
+    domain_age  = float(feat.get("domain_age_days", -1.0))
+
+    # ── 5. Multi-Modal Fusion ────────────────────────────────────────────────
+    if dom_ml_prob is not None:
+        # Full Tri-Component Fusion (URL + DOM + Heuristics)
+        raw_score = (
+            url_ml_prob * 0.35 +
+            dom_ml_prob * 0.40 +
+            brand_score * 0.15 +
+            domain_score * 0.10
+        )
+    else:
+        # Fallback to URL-only + Heuristics if page HTML was not captured
+        raw_score = (
+            url_ml_prob  * 0.45 +
+            brand_score  * 0.25 +
+            domain_score * 0.20 +
+            url_score    * 0.10
+        )
+
+    # ── Non-linear high-confidence phishing boosters ──────────────────────────
     if brand_score > 0.4 and (feat.get("num_pw_inputs", 0.0) > 0 or dom_score > 0.3):
-        raw_score = max(raw_score, 0.82 + 0.15 * brand_score)
+        raw_score = max(raw_score, 0.85)
 
     if feat.get("form_action_diff_domain", 0.0) > 0.5 and feat.get("num_pw_inputs", 0.0) > 0:
         raw_score = max(raw_score, 0.88)
@@ -142,23 +170,17 @@ def predict_risk(feat: Dict[str, Any]) -> Tuple[float, str, Dict[str, float]]:
     if feat.get("has_ip", 0.0) > 0.5 and feat.get("suspicious_kw", 0.0) > 0.5:
         raw_score = max(raw_score, 0.85)
 
-    if ml_score >= 0.80:
-        raw_score = max(raw_score, 0.58)
+    if dom_ml_prob is not None and dom_ml_prob >= 0.95 and url_ml_prob >= 0.70:
+        raw_score = max(raw_score, 0.90)
 
-    # ── Dynamic trust dampening ───────────────────────────────────────────────
-    # trust_score is computed by trust.py from Tranco rank + RDAP domain age.
-    # High trust REDUCES risk score — no hardcoded allowlist needed.
-    trust_score = float(feat.get("trust_score", 0.0))
-    domain_age  = float(feat.get("domain_age_days", -1.0))
-
+    # ── Dynamic Trust Dampening (Eliminates False Positives) ─────────────────
     if trust_score > 0.0:
-        # Linear dampening: max 50% reduction at trust=1.0
         dampening = trust_score * 0.50
         raw_score = raw_score * (1.0 - dampening)
 
     # Extra dampening if domain is very old (> 5 years) regardless of Tranco rank
-    if domain_age >= 1825:
-        raw_score *= 0.80   # additional 20% reduction for established domains
+    if domain_age >= 1825 and raw_score < 0.80:
+        raw_score *= 0.60
 
     # New domain penalty (< 30 days) — amplify risk
     if 0 <= domain_age < 30:
@@ -167,27 +189,29 @@ def predict_risk(feat: Dict[str, Any]) -> Tuple[float, str, Dict[str, float]]:
     # Trust cap: even with some suspicious signals, a highly trusted site
     # (Tranco top-500 + age > 2yr → trust ≥ 0.65) cannot be DANGEROUS
     # unless the ML classifier is very confident it's phishing.
-    if trust_score >= 0.65 and ml_score < 0.80:
-        raw_score = min(raw_score, 0.84)   # cap just below DANGEROUS (0.85)
+    if trust_score >= 0.65 and url_ml_prob < 0.80 and (dom_ml_prob is None or dom_ml_prob < 0.80):
+        raw_score = min(raw_score, 0.50)
 
     final_score = round(max(0.0, min(1.0, raw_score)), 3)
 
-    # ── Thresholds (raised from 0.80/0.50 to reduce false positive banners) ──
-    if final_score >= 0.85:
+    # ── Thresholds ────────────────────────────────────────────────────────────
+    if final_score >= 0.70:
         risk_level = "DANGEROUS"
-    elif final_score >= 0.60:
+    elif final_score >= 0.40:
         risk_level = "SUSPICIOUS"
     else:
         risk_level = "SAFE"
 
     category_scores = {
-        "domain_risk":  round(domain_score, 3),
-        "url_risk":     round(url_score, 3),
-        "brand_risk":   round(brand_score, 3),
-        "dom_risk":     round(dom_score, 3),
-        "ml_risk":      round(ml_score, 3),
-        "trust_score":  round(trust_score, 3),
+        "domain_risk":   round(domain_score, 3),
+        "url_risk":      round(url_score, 3),
+        "brand_risk":    round(brand_score, 3),
+        "dom_risk":      round(dom_score if dom_ml_prob is None else dom_ml_prob, 3),
+        "ml_risk":       round(url_ml_prob, 3),
+        "trust_score":   round(trust_score, 3),
+        "dom_ml_score":  round(dom_ml_prob, 3) if dom_ml_prob is not None else 0.0,
     }
 
     return final_score, risk_level, category_scores
+
 

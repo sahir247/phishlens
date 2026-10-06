@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-08-22T12:59:14Z",
+  "calibrated_thresholds": {
+    "tau_safe": 0.15,
+    "tau_suspicious": 0.139,
+    "tau_dangerous": 0.784,
+    "validation_metrics": {
+      "dangerous_threshold": {
+        "threshold": 0.784,
+        "val_fpr_pct": 0.99,
+        "val_recall_pct": 93.85
+      },
+      "suspicious_threshold": {
+        "threshold": 0.139,
+        "val_fpr_pct": 5.0,
+        "val_recall_pct": 99.1
+      }
+    }
+  },
+  "internal_validation_evaluation": {
+    "total_samples": 35376,
+    "legitimate_breakdown": {
+      "safe_count": 19247,
+      "safe_pct": 95.14,
+      "suspicious_warning_count": 783,
+      "suspicious_warning_pct": 3.87,
+      "dangerous_false_block_count": 201,
+      "dangerous_false_block_pct": 0.99
+    },
+    "phishing_breakdown": {
+      "missed_safe_count": 142,
+      "missed_safe_pct": 0.94,
+      "warned_suspicious_count": 789,
+      "warned_suspicious_pct": 5.21,
+      "blocked_dangerous_count": 14214,
+      "blocked_dangerous_pct": 93.85,
+      "total_intercepted_pct": 99.06
+    }
+  },
+  "external_holdout_evaluation": {
+    "total_samples": 11430,
+    "legitimate_breakdown": {
+      "safe_count": 4207,
+      "safe_pct": 73.61,
+      "suspicious_warning_count": 597,
+      "suspicious_warning_pct": 10.45,
+      "dangerous_false_block_count": 911,
+      "dangerous_false_block_pct": 15.94
+    },
+    "phishing_breakdown": {
+      "missed_safe_count": 2690,
+      "missed_safe_pct": 47.07,
+      "warned_suspicious_count": 422,
+      "warned_suspicious_pct": 7.38,
+      "blocked_dangerous_count": 2603,
+      "blocked_dangerous_pct": 45.55,
+      "total_intercepted_pct": 52.93
+    }
+  }
+}

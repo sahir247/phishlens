@@ -19,11 +19,13 @@ Usage:
 import os
 import json
 import logging
+from typing import Optional, Dict, Any, Tuple
 import numpy as np
 
 import joblib
 
 from config import MODEL_PATH
+
 
 logger = logging.getLogger(__name__)
 
@@ -236,6 +238,87 @@ def _load_model() -> object:
     return _clf
 
 
+# ── Stage 5 Multi-Modal Artifact Loaders ─────────────────────────────────────
+_url_multisrc_model = None
+_dom_model = None
+
+
+def _load_url_multisource_model():
+    global _url_multisrc_model
+    if _url_multisrc_model is not None:
+        return _url_multisrc_model
+    model_path = os.path.join(os.path.dirname(MODEL_PATH), "data", "models", "phishlens_multisource_histgbt.pkl")
+    if os.path.exists(model_path):
+        try:
+            pkg = joblib.load(model_path)
+            _url_multisrc_model = pkg["model"]
+            logger.info("Loaded Multi-Source URL HistGBT model (388k URLs).")
+        except Exception as e:
+            logger.warning(f"Could not load multisource URL model: {e}")
+    return _url_multisrc_model
+
+
+def _load_dom_model():
+    global _dom_model
+    if _dom_model is not None:
+        return _dom_model
+    model_path = os.path.join(os.path.dirname(MODEL_PATH), "data", "models", "phishlens_dom_histgbt.pkl")
+    if os.path.exists(model_path):
+        try:
+            pkg = joblib.load(model_path)
+            _dom_model = pkg["model"]
+            logger.info("Loaded DOM Content HistGBT model (235k samples).")
+        except Exception as e:
+            logger.warning(f"Could not load DOM model: {e}")
+    return _dom_model
+
+
+def get_url_ml_proba(feat: dict, raw_url: str = "") -> float:
+    """
+    Returns phishing probability from the Multi-Source 14-Feature HistGBT model.
+    Falls back to legacy model if multisource artifact is missing.
+    """
+    try:
+        model = _load_url_multisource_model()
+        if model is not None:
+            from features_14 import extract_url_features_14, FEATURE_14, AVAILABLE_IN_EXTENSION
+            if raw_url:
+                f_14 = extract_url_features_14(raw_url)
+            else:
+                f_14 = feat
+            vec = np.full((1, len(FEATURE_14)), np.nan, dtype=np.float64)
+            feat_idx = {col: i for i, col in enumerate(FEATURE_14)}
+            for k in AVAILABLE_IN_EXTENSION:
+                if k in f_14:
+                    vec[0, feat_idx[k]] = float(f_14[k])
+            return float(model.predict_proba(vec)[0][1])
+    except Exception as e:
+        logger.debug(f"Multisource URL model inference fallback: {e}")
+    return get_ml_proba(feat)
+
+
+def get_dom_ml_proba(feat: dict, raw_html: str = "", raw_url: str = "") -> Optional[float]:
+    """
+    Returns phishing probability from the DOM Content HistGBT model.
+    Returns None if no DOM/HTML information is present.
+    """
+    if not raw_html and not feat.get("num_pw_inputs") and not feat.get("has_login_form"):
+        return None
+    try:
+        model = _load_dom_model()
+        if model is not None:
+            from features_dom import extract_dom_features_from_html, extract_dom_features_from_payload, DOM_FEATURE_COLS
+            if raw_html:
+                f_dom = extract_dom_features_from_html(raw_html, page_url=raw_url)
+            else:
+                f_dom = extract_dom_features_from_payload(feat)
+            vec = np.array([[float(f_dom.get(k, 0.0)) for k in DOM_FEATURE_COLS]], dtype=np.float64)
+            return float(model.predict_proba(vec)[0][1])
+    except Exception as e:
+        logger.debug(f"DOM model inference error: {e}")
+    return None
+
+
 def build_feature_vector(feat: dict) -> np.ndarray:
     """Convert a features dict to a numpy array in FEATURE_COLS order."""
     return np.array(
@@ -264,3 +347,4 @@ if __name__ == "__main__":
                         format="%(asctime)s  %(levelname)s  %(message)s")
     train_and_save()
     print(f"Model saved to {MODEL_PATH}")
+

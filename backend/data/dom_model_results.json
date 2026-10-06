@@ -1,0 +1,29 @@
+{
+  "auc_roc": 0.9965,
+  "pr_auc": 0.995,
+  "accuracy": 0.9771,
+  "precision": 0.9698,
+  "recall_tpr": 0.977,
+  "f1_score": 0.9734,
+  "fpr": 0.0227,
+  "fnr": 0.023,
+  "tn": 19768,
+  "fp": 460,
+  "fn": 349,
+  "tp": 14793,
+  "feature_importances": {
+    "ratio_external_refs": 0.1785232421194839,
+    "num_empty_refs": 0.02426108978087438,
+    "domain_title_match_score": 0.01397042064583857,
+    "has_submit_button": 0.0024344321257280996,
+    "has_iframe": 0.002086734386537059,
+    "num_iframes": 0.001887806810226822,
+    "has_password_field": 0.0010150056754922494,
+    "has_login_form": 0.0006515925598270152,
+    "has_external_form_submit": 0.0005014484374019265,
+    "has_obfuscation": 0.00021709866740737827
+  },
+  "train_samples": 165049,
+  "test_samples": 35370,
+  "train_duration_s": 6.69
+}

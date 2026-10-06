@@ -1,0 +1,204 @@
+{
+  "timestamp": "2026-08-22T10:29:57Z",
+  "configurations_evaluated": {
+    "D1_12feat_baseline": {
+      "num_features": 12,
+      "feature_names": [
+        "has_password_field",
+        "has_login_form",
+        "has_external_form_submit",
+        "has_submit_button",
+        "has_iframe",
+        "num_iframes",
+        "num_scripts",
+        "ratio_external_refs",
+        "num_empty_refs",
+        "domain_title_match_score",
+        "has_obfuscation",
+        "line_of_code"
+      ],
+      "train_time_seconds": 7.12,
+      "phiusiil_held_out": {
+        "auc_roc": 0.9995,
+        "pr_auc": 0.9995,
+        "accuracy": 99.44,
+        "precision": 99.47,
+        "recall": 99.21,
+        "f1_score": 0.9934,
+        "fpr": 0.4,
+        "fnr": 0.79,
+        "confusion_matrix": {
+          "tn": 20148,
+          "fp": 80,
+          "fn": 119,
+          "tp": 15023
+        }
+      },
+      "webpage_external": {
+        "auc_roc": 0.6284,
+        "pr_auc": 0.6423,
+        "accuracy": 49.52,
+        "precision": 22.22,
+        "recall": 0.38,
+        "f1_score": 0.0076,
+        "fpr": 1.35,
+        "fnr": 99.62,
+        "confusion_matrix": {
+          "tn": 5638,
+          "fp": 77,
+          "fn": 5693,
+          "tp": 22
+        }
+      },
+      "combined_mean_auc": 0.8139
+    },
+    "D2_11feat_no_loc": {
+      "num_features": 11,
+      "feature_names": [
+        "has_password_field",
+        "has_login_form",
+        "has_external_form_submit",
+        "has_submit_button",
+        "has_iframe",
+        "num_iframes",
+        "num_scripts",
+        "ratio_external_refs",
+        "num_empty_refs",
+        "domain_title_match_score",
+        "has_obfuscation"
+      ],
+      "train_time_seconds": 7.14,
+      "phiusiil_held_out": {
+        "auc_roc": 0.9986,
+        "pr_auc": 0.9982,
+        "accuracy": 98.76,
+        "precision": 98.65,
+        "recall": 98.45,
+        "f1_score": 0.9855,
+        "fpr": 1.01,
+        "fnr": 1.55,
+        "confusion_matrix": {
+          "tn": 20024,
+          "fp": 204,
+          "fn": 234,
+          "tp": 14908
+        }
+      },
+      "webpage_external": {
+        "auc_roc": 0.6368,
+        "pr_auc": 0.6533,
+        "accuracy": 66.27,
+        "precision": 79.17,
+        "recall": 44.16,
+        "f1_score": 0.567,
+        "fpr": 11.62,
+        "fnr": 55.84,
+        "confusion_matrix": {
+          "tn": 5051,
+          "fp": 664,
+          "fn": 3191,
+          "tp": 2524
+        }
+      },
+      "combined_mean_auc": 0.8177
+    },
+    "D3_10feat_no_loc_scripts": {
+      "num_features": 10,
+      "feature_names": [
+        "has_password_field",
+        "has_login_form",
+        "has_external_form_submit",
+        "has_submit_button",
+        "has_iframe",
+        "num_iframes",
+        "ratio_external_refs",
+        "num_empty_refs",
+        "domain_title_match_score",
+        "has_obfuscation"
+      ],
+      "train_time_seconds": 6.23,
+      "phiusiil_held_out": {
+        "auc_roc": 0.9965,
+        "pr_auc": 0.995,
+        "accuracy": 97.71,
+        "precision": 96.98,
+        "recall": 97.7,
+        "f1_score": 0.9734,
+        "fpr": 2.27,
+        "fnr": 2.3,
+        "confusion_matrix": {
+          "tn": 19768,
+          "fp": 460,
+          "fn": 349,
+          "tp": 14793
+        }
+      },
+      "webpage_external": {
+        "auc_roc": 0.657,
+        "pr_auc": 0.6675,
+        "accuracy": 64.34,
+        "precision": 71.42,
+        "recall": 47.8,
+        "f1_score": 0.5727,
+        "fpr": 19.13,
+        "fnr": 52.2,
+        "confusion_matrix": {
+          "tn": 4622,
+          "fp": 1093,
+          "fn": 2983,
+          "tp": 2732
+        }
+      },
+      "combined_mean_auc": 0.8268
+    },
+    "D4_9feat_robust_core": {
+      "num_features": 9,
+      "feature_names": [
+        "has_password_field",
+        "has_login_form",
+        "has_external_form_submit",
+        "has_submit_button",
+        "has_iframe",
+        "num_iframes",
+        "ratio_external_refs",
+        "domain_title_match_score",
+        "has_obfuscation"
+      ],
+      "train_time_seconds": 6.38,
+      "phiusiil_held_out": {
+        "auc_roc": 0.9954,
+        "pr_auc": 0.9932,
+        "accuracy": 97.35,
+        "precision": 96.66,
+        "recall": 97.15,
+        "f1_score": 0.9691,
+        "fpr": 2.51,
+        "fnr": 2.85,
+        "confusion_matrix": {
+          "tn": 19720,
+          "fp": 508,
+          "fn": 431,
+          "tp": 14711
+        }
+      },
+      "webpage_external": {
+        "auc_roc": 0.649,
+        "pr_auc": 0.6622,
+        "accuracy": 64.53,
+        "precision": 72.14,
+        "recall": 47.35,
+        "f1_score": 0.5717,
+        "fpr": 18.29,
+        "fnr": 52.65,
+        "confusion_matrix": {
+          "tn": 4670,
+          "fp": 1045,
+          "fn": 3009,
+          "tp": 2706
+        }
+      },
+      "combined_mean_auc": 0.8222
+    }
+  },
+  "best_candidate": "D3_10feat_no_loc_scripts"
+}

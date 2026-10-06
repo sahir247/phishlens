@@ -1,0 +1,359 @@
+{
+  "timestamp": "2026-08-22T13:05:41Z",
+  "dataset": "Web Page Phishing Dataset (n=11,430)",
+  "auc_roc": 0.7554,
+  "pr_auc": 0.7321,
+  "threshold_sweep": [
+    {
+      "threshold": 0.1,
+      "accuracy": 50.36,
+      "precision": 50.18,
+      "recall": 99.93,
+      "f1_score": 0.6681,
+      "fpr": 99.21,
+      "fnr": 0.07,
+      "confusion_matrix": {
+        "tn": 45,
+        "fp": 5670,
+        "fn": 4,
+        "tp": 5711
+      },
+      "legit_blocked_pct": 99.21,
+      "phish_blocked_pct": 99.93
+    },
+    {
+      "threshold": 0.15,
+      "accuracy": 57.79,
+      "precision": 54.33,
+      "recall": 97.76,
+      "f1_score": 0.6984,
+      "fpr": 82.19,
+      "fnr": 2.24,
+      "confusion_matrix": {
+        "tn": 1018,
+        "fp": 4697,
+        "fn": 128,
+        "tp": 5587
+      },
+      "legit_blocked_pct": 82.19,
+      "phish_blocked_pct": 97.76
+    },
+    {
+      "threshold": 0.2,
+      "accuracy": 60.02,
+      "precision": 55.91,
+      "recall": 94.77,
+      "f1_score": 0.7033,
+      "fpr": 74.73,
+      "fnr": 5.23,
+      "confusion_matrix": {
+        "tn": 1444,
+        "fp": 4271,
+        "fn": 299,
+        "tp": 5416
+      },
+      "legit_blocked_pct": 74.73,
+      "phish_blocked_pct": 94.77
+    },
+    {
+      "threshold": 0.25,
+      "accuracy": 61.17,
+      "precision": 56.85,
+      "recall": 92.69,
+      "f1_score": 0.7048,
+      "fpr": 70.34,
+      "fnr": 7.31,
+      "confusion_matrix": {
+        "tn": 1695,
+        "fp": 4020,
+        "fn": 418,
+        "tp": 5297
+      },
+      "legit_blocked_pct": 70.34,
+      "phish_blocked_pct": 92.69
+    },
+    {
+      "threshold": 0.3,
+      "accuracy": 63.62,
+      "precision": 58.88,
+      "recall": 90.36,
+      "f1_score": 0.713,
+      "fpr": 63.11,
+      "fnr": 9.64,
+      "confusion_matrix": {
+        "tn": 2108,
+        "fp": 3607,
+        "fn": 551,
+        "tp": 5164
+      },
+      "legit_blocked_pct": 63.11,
+      "phish_blocked_pct": 90.36
+    },
+    {
+      "threshold": 0.35,
+      "accuracy": 67.82,
+      "precision": 63.87,
+      "recall": 82.05,
+      "f1_score": 0.7183,
+      "fpr": 46.4,
+      "fnr": 17.95,
+      "confusion_matrix": {
+        "tn": 3063,
+        "fp": 2652,
+        "fn": 1026,
+        "tp": 4689
+      },
+      "legit_blocked_pct": 46.4,
+      "phish_blocked_pct": 82.05
+    },
+    {
+      "threshold": 0.4,
+      "accuracy": 68.94,
+      "precision": 72.65,
+      "recall": 60.75,
+      "f1_score": 0.6617,
+      "fpr": 22.87,
+      "fnr": 39.25,
+      "confusion_matrix": {
+        "tn": 4408,
+        "fp": 1307,
+        "fn": 2243,
+        "tp": 3472
+      },
+      "legit_blocked_pct": 22.87,
+      "phish_blocked_pct": 60.75
+    },
+    {
+      "threshold": 0.45,
+      "accuracy": 65.97,
+      "precision": 72.99,
+      "recall": 50.69,
+      "f1_score": 0.5983,
+      "fpr": 18.76,
+      "fnr": 49.31,
+      "confusion_matrix": {
+        "tn": 4643,
+        "fp": 1072,
+        "fn": 2818,
+        "tp": 2897
+      },
+      "legit_blocked_pct": 18.76,
+      "phish_blocked_pct": 50.69
+    },
+    {
+      "threshold": 0.5,
+      "accuracy": 66.0,
+      "precision": 74.43,
+      "recall": 48.75,
+      "f1_score": 0.5891,
+      "fpr": 16.75,
+      "fnr": 51.25,
+      "confusion_matrix": {
+        "tn": 4758,
+        "fp": 957,
+        "fn": 2929,
+        "tp": 2786
+      },
+      "legit_blocked_pct": 16.75,
+      "phish_blocked_pct": 48.75
+    },
+    {
+      "threshold": 0.55,
+      "accuracy": 65.97,
+      "precision": 77.04,
+      "recall": 45.49,
+      "f1_score": 0.5721,
+      "fpr": 13.56,
+      "fnr": 54.51,
+      "confusion_matrix": {
+        "tn": 4940,
+        "fp": 775,
+        "fn": 3115,
+        "tp": 2600
+      },
+      "legit_blocked_pct": 13.56,
+      "phish_blocked_pct": 45.49
+    },
+    {
+      "threshold": 0.6,
+      "accuracy": 65.82,
+      "precision": 78.07,
+      "recall": 43.99,
+      "f1_score": 0.5627,
+      "fpr": 12.35,
+      "fnr": 56.01,
+      "confusion_matrix": {
+        "tn": 5009,
+        "fp": 706,
+        "fn": 3201,
+        "tp": 2514
+      },
+      "legit_blocked_pct": 12.35,
+      "phish_blocked_pct": 43.99
+    },
+    {
+      "threshold": 0.65,
+      "accuracy": 65.72,
+      "precision": 79.01,
+      "recall": 42.82,
+      "f1_score": 0.5554,
+      "fpr": 11.37,
+      "fnr": 57.18,
+      "confusion_matrix": {
+        "tn": 5065,
+        "fp": 650,
+        "fn": 3268,
+        "tp": 2447
+      },
+      "legit_blocked_pct": 11.37,
+      "phish_blocked_pct": 42.82
+    },
+    {
+      "threshold": 0.7,
+      "accuracy": 66.1,
+      "precision": 81.12,
+      "recall": 41.96,
+      "f1_score": 0.5531,
+      "fpr": 9.76,
+      "fnr": 58.04,
+      "confusion_matrix": {
+        "tn": 5157,
+        "fp": 558,
+        "fn": 3317,
+        "tp": 2398
+      },
+      "legit_blocked_pct": 9.76,
+      "phish_blocked_pct": 41.96
+    },
+    {
+      "threshold": 0.75,
+      "accuracy": 65.83,
+      "precision": 81.2,
+      "recall": 41.19,
+      "f1_score": 0.5466,
+      "fpr": 9.54,
+      "fnr": 58.81,
+      "confusion_matrix": {
+        "tn": 5170,
+        "fp": 545,
+        "fn": 3361,
+        "tp": 2354
+      },
+      "legit_blocked_pct": 9.54,
+      "phish_blocked_pct": 41.19
+    },
+    {
+      "threshold": 0.8,
+      "accuracy": 66.03,
+      "precision": 81.85,
+      "recall": 41.19,
+      "f1_score": 0.548,
+      "fpr": 9.13,
+      "fnr": 58.81,
+      "confusion_matrix": {
+        "tn": 5193,
+        "fp": 522,
+        "fn": 3361,
+        "tp": 2354
+      },
+      "legit_blocked_pct": 9.13,
+      "phish_blocked_pct": 41.19
+    },
+    {
+      "threshold": 0.85,
+      "accuracy": 66.06,
+      "precision": 81.99,
+      "recall": 41.17,
+      "f1_score": 0.5482,
+      "fpr": 9.05,
+      "fnr": 58.83,
+      "confusion_matrix": {
+        "tn": 5198,
+        "fp": 517,
+        "fn": 3362,
+        "tp": 2353
+      },
+      "legit_blocked_pct": 9.05,
+      "phish_blocked_pct": 41.17
+    },
+    {
+      "threshold": 0.9,
+      "accuracy": 61.56,
+      "precision": 81.47,
+      "recall": 29.92,
+      "f1_score": 0.4377,
+      "fpr": 6.81,
+      "fnr": 70.08,
+      "confusion_matrix": {
+        "tn": 5326,
+        "fp": 389,
+        "fn": 4005,
+        "tp": 1710
+      },
+      "legit_blocked_pct": 6.81,
+      "phish_blocked_pct": 29.92
+    }
+  ],
+  "recommended_profiles": {
+    "conservative": {
+      "threshold": 0.4,
+      "metrics": {
+        "threshold": 0.4,
+        "accuracy": 68.94,
+        "precision": 72.65,
+        "recall": 60.75,
+        "f1_score": 0.6617,
+        "fpr": 22.87,
+        "fnr": 39.25,
+        "confusion_matrix": {
+          "tn": 4408,
+          "fp": 1307,
+          "fn": 2243,
+          "tp": 3472
+        },
+        "legit_blocked_pct": 22.87,
+        "phish_blocked_pct": 60.75
+      }
+    },
+    "balanced_f1_optimal": {
+      "threshold": 0.35,
+      "metrics": {
+        "threshold": 0.35,
+        "accuracy": 67.82,
+        "precision": 63.87,
+        "recall": 82.05,
+        "f1_score": 0.7183,
+        "fpr": 46.4,
+        "fnr": 17.95,
+        "confusion_matrix": {
+          "tn": 3063,
+          "fp": 2652,
+          "fn": 1026,
+          "tp": 4689
+        },
+        "legit_blocked_pct": 46.4,
+        "phish_blocked_pct": 82.05
+      }
+    },
+    "aggressive": {
+      "threshold": 0.2,
+      "metrics": {
+        "threshold": 0.2,
+        "accuracy": 60.02,
+        "precision": 55.91,
+        "recall": 94.77,
+        "f1_score": 0.7033,
+        "fpr": 74.73,
+        "fnr": 5.23,
+        "confusion_matrix": {
+          "tn": 1444,
+          "fp": 4271,
+          "fn": 299,
+          "tp": 5416
+        },
+        "legit_blocked_pct": 74.73,
+        "phish_blocked_pct": 94.77
+      }
+    }
+  }
+}

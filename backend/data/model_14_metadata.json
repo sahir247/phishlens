@@ -1,0 +1,136 @@
+{
+  "version": "1.0.0",
+  "trained_at": "2026-08-22T08:12:00.351485Z",
+  "training_duration_s": 801.8,
+  "dataset": "C:\\Users\\parve\\OneDrive\\Desktop\\github\\phishlens\\backend\\data\\vrbancic_dataset.csv",
+  "n_features": 14,
+  "feature_names": [
+    "qty_dot_domain",
+    "qty_vowels_domain",
+    "domain_length",
+    "qty_dot_directory",
+    "qty_slash_directory",
+    "directory_length",
+    "qty_dot_file",
+    "file_length",
+    "params_length",
+    "time_response",
+    "asn_ip",
+    "time_domain_activation",
+    "time_domain_expiration",
+    "ttl_hostname"
+  ],
+  "model_type": "RandomForestClassifier (calibrated)",
+  "best_params": {
+    "clf__n_estimators": "300",
+    "clf__min_samples_split": "2",
+    "clf__min_samples_leaf": "1",
+    "clf__max_features": "0.4",
+    "clf__max_depth": "20",
+    "clf__class_weight": "balanced"
+  },
+  "n_train": 62052,
+  "n_val": 13297,
+  "n_test": 13298,
+  "metrics": {
+    "auc_roc": 0.9933,
+    "avg_precision": 0.9965,
+    "accuracy": 0.9637,
+    "precision": 0.9749,
+    "recall": 0.9694,
+    "f1_score": 0.9722,
+    "fpr": 0.0472,
+    "fnr": 0.0306,
+    "n_test": 13298,
+    "inference_ms_per_url": 0.375,
+    "confusion_matrix": [
+      [
+        4380,
+        217
+      ],
+      [
+        266,
+        8435
+      ]
+    ]
+  },
+  "feature_importances": {
+    "directory_length": 0.03619,
+    "file_length": 0.02941,
+    "time_domain_activation": 0.0277,
+    "qty_slash_directory": 0.01587,
+    "asn_ip": 0.00524,
+    "qty_dot_domain": 0.00511,
+    "ttl_hostname": 0.00435,
+    "time_domain_expiration": 0.00295,
+    "domain_length": 0.00289,
+    "params_length": 0.0022,
+    "time_response": 0.00215,
+    "qty_dot_directory": 0.00212,
+    "qty_vowels_domain": 0.00144,
+    "qty_dot_file": 0.00138
+  },
+  "calibration": "Platt (sigmoid, prefit on val set)",
+  "future_architecture": {
+    "url_structural": {
+      "description": "Available directly in browser extension (no network)",
+      "features": [
+        "qty_dot_domain",
+        "qty_vowels_domain",
+        "domain_length",
+        "qty_dot_directory",
+        "qty_slash_directory",
+        "directory_length",
+        "qty_dot_file",
+        "file_length",
+        "params_length"
+      ],
+      "latency": "~0ms"
+    },
+    "network_domain": {
+      "description": "Requires backend DNS/WHOIS lookup",
+      "features": [
+        "time_response",
+        "asn_ip",
+        "time_domain_activation",
+        "time_domain_expiration",
+        "ttl_hostname"
+      ],
+      "latency": "100-3000ms (cached after first call)"
+    },
+    "dom_html": {
+      "description": "Available in browser extension via content script",
+      "features": [
+        "num_pw_inputs",
+        "form_action_diff_domain",
+        "form_insecure_http",
+        "hidden_iframes",
+        "num_forms",
+        "external_resource_ratio"
+      ],
+      "latency": "~0ms",
+      "status": "planned \u2014 currently scored by heuristics in model.py"
+    },
+    "javascript": {
+      "description": "Requires JS execution analysis (future)",
+      "features": [
+        "obfuscated_js",
+        "suspicious_event_handlers",
+        "eval_usage",
+        "document_write_count"
+      ],
+      "latency": "variable",
+      "status": "not yet implemented"
+    },
+    "visual_behavioral": {
+      "description": "Requires visual similarity engine (future)",
+      "features": [
+        "logo_mismatch",
+        "brand_text_hit",
+        "visual_similarity_score"
+      ],
+      "latency": "100-500ms",
+      "status": "logo_mismatch partially implemented in features.py"
+    }
+  }
+}

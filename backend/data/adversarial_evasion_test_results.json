@@ -1,0 +1,161 @@
+{
+  "timestamp": "2026-08-22T12:59:35Z",
+  "total_scenarios": 8,
+  "intercepted_count": 8,
+  "evaded_count": 0,
+  "interception_rate_pct": 100.0,
+  "scenarios": [
+    {
+      "scenario_id": "ADV-01",
+      "name": "Homograph IDN Squatting (Cyrillic '\u0430')",
+      "url": "https://xn--pypal-4ve.com/signin",
+      "risk_score": 0.736,
+      "risk_level": "DANGEROUS",
+      "category_breakdown": {
+        "domain_risk": 0.35,
+        "url_risk": 0.15,
+        "brand_risk": 0.0,
+        "dom_risk": 0.933,
+        "ml_risk": 0.991,
+        "trust_score": 0.05,
+        "dom_ml_score": 0.933
+      },
+      "status": "BLOCKED (Dangerous)",
+      "latency_ms": 1344.0,
+      "expected_threat": "High Domain/Brand Risk (Punycode + Brand impersonation)"
+    },
+    {
+      "scenario_id": "ADV-02",
+      "name": "Subdomain Brand Chaining & TLD Cloaking",
+      "url": "http://paypal.com.account-update.auth-session.xyz/cgi-bin/login.php",
+      "risk_score": 0.84,
+      "risk_level": "DANGEROUS",
+      "category_breakdown": {
+        "domain_risk": 0.5,
+        "url_risk": 0.6,
+        "brand_risk": 0.45,
+        "dom_risk": 0.933,
+        "ml_risk": 0.998,
+        "trust_score": 0.0,
+        "dom_ml_score": 0.933
+      },
+      "status": "BLOCKED (Dangerous)",
+      "latency_ms": 47.0,
+      "expected_threat": "Multi-Subdomain brand spoofing + suspicious TLD"
+    },
+    {
+      "scenario_id": "ADV-03",
+      "name": "Deep Path & Keyword Stuffing on Benign Host",
+      "url": "http://user-free-hosting-portal.net/login/paypal/verify/security/auth/account.html",
+      "risk_score": 0.722,
+      "risk_level": "DANGEROUS",
+      "category_breakdown": {
+        "domain_risk": 0.0,
+        "url_risk": 0.75,
+        "brand_risk": 0.0,
+        "dom_risk": 0.933,
+        "ml_risk": 0.997,
+        "trust_score": 0.0,
+        "dom_ml_score": 0.933
+      },
+      "status": "BLOCKED (Dangerous)",
+      "latency_ms": 47.0,
+      "expected_threat": "Path keyword flood + Untrusted domain"
+    },
+    {
+      "scenario_id": "ADV-04",
+      "name": "Asset Dressing (Legitimate Microsoft CDN References)",
+      "url": "http://office365-secure-document-preview.top/view.php",
+      "risk_score": 0.4,
+      "risk_level": "SUSPICIOUS",
+      "category_breakdown": {
+        "domain_risk": 0.45,
+        "url_risk": 0.5,
+        "brand_risk": 0.0,
+        "dom_risk": 0.014,
+        "ml_risk": 0.998,
+        "trust_score": 0.0,
+        "dom_ml_score": 0.014
+      },
+      "status": "WARNED (Suspicious)",
+      "latency_ms": 31.0,
+      "expected_threat": "External form action to diff domain + High ratio of external assets + Brand spoofing"
+    },
+    {
+      "scenario_id": "ADV-05",
+      "name": "Invisible Viewport iFrame Credential Overlay",
+      "url": "http://clean-looking-blog.biz/article-1029",
+      "risk_score": 0.9,
+      "risk_level": "DANGEROUS",
+      "category_breakdown": {
+        "domain_risk": 0.0,
+        "url_risk": 0.3,
+        "brand_risk": 0.0,
+        "dom_risk": 0.969,
+        "ml_risk": 0.996,
+        "trust_score": 0.0,
+        "dom_ml_score": 0.969
+      },
+      "status": "BLOCKED (Dangerous)",
+      "latency_ms": 31.0,
+      "expected_threat": "Suspicious iFrame overlay + External reference"
+    },
+    {
+      "scenario_id": "ADV-06",
+      "name": "Script Obfuscation & JS Eval Exfiltration",
+      "url": "http://secure-banking-verification.club/auth",
+      "risk_score": 0.9,
+      "risk_level": "DANGEROUS",
+      "category_breakdown": {
+        "domain_risk": 0.0,
+        "url_risk": 0.45,
+        "brand_risk": 0.0,
+        "dom_risk": 1.0,
+        "ml_risk": 0.996,
+        "trust_score": 0.0,
+        "dom_ml_score": 1.0
+      },
+      "status": "BLOCKED (Dangerous)",
+      "latency_ms": 47.0,
+      "expected_threat": "JS Obfuscation + Form submit to external server"
+    },
+    {
+      "scenario_id": "ADV-07",
+      "name": "Misleading Title vs Untrusted Domain Squatting",
+      "url": "http://auth-accounts-google-verify.cc/login",
+      "risk_score": 0.792,
+      "risk_level": "DANGEROUS",
+      "category_breakdown": {
+        "domain_risk": 0.0,
+        "url_risk": 0.5,
+        "brand_risk": 0.468,
+        "dom_risk": 0.933,
+        "ml_risk": 0.996,
+        "trust_score": 0.0,
+        "dom_ml_score": 0.933
+      },
+      "status": "BLOCKED (Dangerous)",
+      "latency_ms": 31.0,
+      "expected_threat": "Severe Domain-Title Mismatch (Google vs .cc domain) + Brand Squatting"
+    },
+    {
+      "scenario_id": "ADV-08",
+      "name": "Raw IP Address Login Harvester",
+      "url": "http://185.220.101.5:8080/cpanel/login",
+      "risk_score": 0.763,
+      "risk_level": "DANGEROUS",
+      "category_breakdown": {
+        "domain_risk": 0.4,
+        "url_risk": 0.35,
+        "brand_risk": 0.0,
+        "dom_risk": 0.933,
+        "ml_risk": 1.0,
+        "trust_score": 0.0,
+        "dom_ml_score": 0.933
+      },
+      "status": "BLOCKED (Dangerous)",
+      "latency_ms": 31.0,
+      "expected_threat": "Raw IP hostname + HTTP without TLS + Login Form"
+    }
+  ]
+}
